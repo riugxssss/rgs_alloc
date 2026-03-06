@@ -1,0 +1,4 @@
+//
+
+Add two main function realloc
+Add a flag for coalescing function and add error handling functions

@@ -1,0 +1,66 @@
+/* RGS Allocator - A custom allocator.
+ *
+ * Copyright (c) 2026, A Riugxss <riugxs@ gmail .com>
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *   * Redistributions of source code must retain the above copyright notice,
+ *     this list of conditions and the following disclaimer.
+ *   * Redistributions in binary form must reproduce the above copyright
+ *     notice, this list of conditions and the following disclaimer in the
+ *     documentation and/or other materials provided with the distribution.
+ *   * Neither the name of Redis nor the names of its contributors may be used
+ *     to endorse or promote products derived from this software without
+ *     specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
+
+#ifndef RGS_ALLOC_H
+#define RGS_ALLOC_H
+
+/*Block struct*/
+typedef struct hblock hblock_t; //Header
+typedef struct fblock fblock_t; //Footer (Boundary tags)
+typedef struct freelist freelist_t;
+
+/*Main API*/ 
+void *rgs_allocator     (size_t size);
+void rgs_free           (void *ptr  );
+void *rgs_callocator    (size_t nitem, size_t size);
+void *rgs_reallocator   (void *ptr, size_t size);
+
+/*Strategies defining*/
+#define FIRST_FIT 1
+#define BEST_FIT  2
+#define WORST_FIT 3
+
+/*Fit strategy choice*/
+#ifndef ALLOC_STRATEGY
+#define ALLOC_STRATEGY FIRST_FIT
+#endif 
+
+/*Fit macro names definitions*/
+#if ALLOC_STRATEGY == FIRST_FIT
+#define FIT_NAME "First Fit"
+#elif ALLOC_STRATEGY == BEST_FIT
+#define FIT_NAME "Best Fit"
+#elif ALLOC_STRATEGY == WORST_FIT
+#define FIT_NAME "Worst Fit"
+#else
+#define FIT_NAME "Unknown"
+#endif
+
+#endif /*RGS_ALLOC_H*/
