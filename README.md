@@ -43,15 +43,15 @@ the kernel to give you more memory. The sbrk() syscall return a void *ptr to the
 3) RGS_RESIZE
 4) RGS_FREE
 
-You can find 4 APIs in the library 
-1. rgs_alloc allocate a block and return the ptr to the user data, **if the allocation failed errno setted and NULL is returned**
+
+1. *rgs_alloc* allocate a block and return the ptr to the user data, **if the allocation failed errno setted and NULL is returned**
   
-2. rgs_alloczero allocate a block and set every byte of the user data zone to 0, **if the allocation failed errno setted and NULL is returned**
+2. *rgs_alloczero* allocate a block and set every byte of the user data zone to 0, **if the allocation failed errno setted and NULL is returned**
    
-3. rgs_resize resize a block size and based on the size you entered, it does optimization, **if fail errno setted and NULL is returned**
+3. *rgs_resize* resize a block size and based on the size you entered, it does optimization, **if fail errno setted and NULL is returned**
    
-4. rgs_free the free function get many incomprehension, when we call the free function many people say *it deallocate memory* 
-but that is not totally correct, the heap VMA is organizated in blocks (or this is the common structure) and when we call
+4. *rgs_free* the free function get many incomprehension, when we call the free function many people say *it deallocate memory* 
+but that is not totally correct, **the heap VMA is organizated in blocks (or this is the common structure)** and when we call
 the free function we only set that block to reusable not deallocate, that's also why when we use allocators they give
 pointer containing randoms value, because some other program used that block already.
 
