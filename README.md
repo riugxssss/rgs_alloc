@@ -1,80 +1,59 @@
 RGS Allocator
+
 Overview
 
-RGS Allocator is a custom memory allocator written in C, featuring:
+RGS Allocator is a custom memory allocator written in C. It provides:
 
-Thread-safe allocation with a global mutex.
+Thread-safe allocation using a global mutex.
 
-Free list management (rgs_freelist.c/.h) with insert/remove and print utilities.
+Free list management (rgs_freelist.c/.h) with fl_insert, fl_remove, and print_fl.
 
 Three fit strategies: best-fit, worst-fit, first-fit.
 
-Core allocation functions (rgs_alloc.c/.h) including:
+Core allocation functions (rgs_alloc.c/.h):
 
 rgs_alloc, rgs_resize, rgs_free, rgs_alloczero
 
 Internal abstractions: rgs_allocator, rgs_reallocator, rgs_freeall, rgs_callocator
 
-Fundamental helper functions (rgs_functionality.c/.h) such as:
+Helper functions (rgs_functionality.c/.h):
 
 create_block, get_footer, get_heap_start, isvalid_ptr, etc.
 
-Header-only macros library for modularity and code clarity.
+Header-only macros library for constants, alignment, and utilities.
 
-RGS demonstrates full-featured memory management with coalescing, splitting, multiple allocation strategies, and basic thread-safety.
+RGS demonstrates advanced memory management techniques including coalescing, splitting, and multiple allocation strategies in a thread-safe environment.
 
 Repository Structure
-rgs_alloc/
-│
-├─ include/                # Header files
-│   ├─ rgs_freelist.h
-│   ├─ rgs_alloc.h
-│   ├─ rgs_functionality.h
-│   └─ rgs_macros.h
-│
-├─ src/                    # Source files
-│   ├─ rgs_freelist.c
-│   ├─ rgs_alloc.c
-│   └─ rgs_functionality.c
-│
-├─ tests/                  # Test file
-│   └─ malloc_usage.c
-│
-├─ Makefile                # Build configuration
-└─ README.md
+Directory / File	Description
+include/rgs_freelist.h	Free list functions and definitions
+include/rgs_alloc.h	Public allocation API
+include/rgs_functionality.h	Low-level helper functions
+include/rgs_macros.h	Header-only macros
+src/rgs_freelist.c	Free list implementation
+src/rgs_alloc.c	Core allocator implementation
+src/rgs_functionality.c	Helper function implementation
+tests/malloc_usage.c	Example usage and test
+Makefile	Build configuration
 Features
 
-Free List Management (rgs_freelist):
+Free List Management: Efficient block tracking with fl_insert, fl_remove, and print_fl.
 
-fl_insert, fl_remove, print_fl
+Allocation Strategies: Best-fit, Worst-fit, First-fit selectable per allocation.
 
-Maintains free blocks efficiently for fast allocation.
+Thread Safety: All allocator functions are protected with a global pthread_mutex.
 
-Allocation Strategies:
+Core Functions:
 
-Best-fit, Worst-fit, First-fit selectable per allocation.
+rgs_alloc(size_t size) – Allocate memory.
 
-Thread Safety:
+rgs_resize(void* ptr, size_t size) – Resize allocated memory.
 
-Uses a global pthread_mutex to make all allocation functions safe for multi-threaded use.
+rgs_free(void* ptr) – Free allocated memory.
 
-Core Functions (rgs_alloc):
+rgs_alloczero(size_t nitem, size_t size) – Allocate zero-initialized memory.
 
-rgs_alloc(size_t size) – allocate memory.
-
-rgs_resize(void* ptr, size_t size) – resize allocated memory.
-
-rgs_free(void* ptr) – free allocated memory.
-
-rgs_alloczero(size_t nitem, size_t size) – allocate zero-initialized memory.
-
-Low-Level Helpers (rgs_functionality):
-
-Functions for block creation, footer/header access, heap start tracking, pointer validation, and coalescing.
-
-Macros Library:
-
-Provides constants, alignment helpers, and other utilities for modular code.
+Low-Level Helpers: Block creation, footer/header access, heap start tracking, pointer validation, and coalescing.
 
 Installation & Build
 
@@ -83,33 +62,23 @@ Clone the repository:
 git clone https://github.com/riugxssss/rgs_alloc.git
 cd rgs_alloc
 
-Build the allocator and the test using the Makefile:
+Build the allocator and test executable using the Makefile:
 
 make
-
-This will compile the source files and generate the test executable.
 
 Run the test program:
 
 ./malloc_usage
 
-The Makefile includes -pthread to enable thread-safe operations.
-
 Clean build files:
 
 make clean
-Learning References
 
-The allocator was implemented based on the following study resources:
-
-GeeksforGeeks: Memory Management in C
-
-Linux man pages: malloc, free, realloc, calloc
-
-General references on free lists, block splitting, and coalescing in dynamic memory allocation.
+The -pthread flag is included in the Makefile for thread-safe operations.
 
 Usage Example
 #include "rgs_alloc.h"
+#include <stdio.h>
 
 int main() {
     // Allocate 256 bytes
@@ -131,10 +100,20 @@ int main() {
 
     return 0;
 }
+References
+
+This allocator was developed based on:
+
+GeeksforGeeks: Memory Management in C
+
+Linux man pages: malloc, free, realloc, calloc
+
+General literature on free lists, block splitting, and coalescing in dynamic memory allocation.
+
 Notes
 
-This allocator is mainly educational and demonstrates advanced memory management techniques.
+Mainly educational, showcasing dynamic memory allocation concepts.
 
-Currently uses a single global mutex for thread safety; performance may degrade under heavy multi-threaded usage.
+Uses a single global mutex for thread safety; may not scale for high-performance multi-threaded workloads.
 
 Designed for Linux environments; may require adjustments for other OSs.
