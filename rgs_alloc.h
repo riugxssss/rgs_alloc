@@ -11,7 +11,7 @@
  *   * Redistributions in binary form must reproduce the above copyright
  *     notice, this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *   * Neither the name of Redis nor the names of its contributors may be used
+ *   * Neither the name of RGS nor the names of its contributors may be used
  *     to endorse or promote products derived from this software without
  *     specific prior written permission.
  *
@@ -31,16 +31,26 @@
 #ifndef RGS_ALLOC_H
 #define RGS_ALLOC_H
 
+#include "rgs_functionality.h"
+
 /*Block struct*/
-typedef struct hblock hblock_t; //Header
+typedef struct hblock hblock_t; //Header struct
 typedef struct fblock fblock_t; //Footer (Boundary tags)
-typedef struct freelist freelist_t;
+typedef struct freelist freelist_t; //Freelist struct
 
 /*Main API*/ 
-void *rgs_allocator     (size_t size);
-void rgs_free           (void *ptr  );
-void *rgs_callocator    (size_t nitem, size_t size);
-void *rgs_reallocator   (void *ptr, size_t size);
+void *rgs_alloc(size_t size);
+void *rgs_resize(void *ptr, size_t size);
+void *rgs_alloczero(size_t nitem, size_t size);
+void rgs_free(void *ptr);
+
+/*
+    ------------
+                |
+    ALLOC MACROS|
+                |
+    ------------
+*/
 
 /*Strategies defining*/
 #define FIRST_FIT 1
@@ -62,5 +72,6 @@ void *rgs_reallocator   (void *ptr, size_t size);
 #else
 #define FIT_NAME "Unknown"
 #endif
+
 
 #endif /*RGS_ALLOC_H*/

@@ -1,8 +1,8 @@
 CC = gcc
-CFLAGS = -Wall -fsanitize=address -Wextra -g
+CFLAGS = -Wall -fsanitize=address -O1 -Wextra -g 
 
 TARGET = main
-OBJ = malloc_usage.o rgs_alloc.o
+OBJ = malloc_usage.o rgs_alloc.o rgs_freelist.o rgs_functionality.o
 
 all: $(TARGET)
 

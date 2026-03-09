@@ -1,6 +1,6 @@
-/* RGS Allocator - A custom allocator.
+/* RGS Allocator - A custom allocator with sbrk().
  *
- * Version 1.0 -- 2026
+ * Version 1.1 -- 2026 Mar 9
  *
  * Copyright (c) 2026, A Riugxss <riugxs@ gmail .com>
  * All rights reserved.
@@ -30,45 +30,46 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+ #ifndef RGS_FUNCTIONALITY_H
+ #define RGS_FUNCTIONALITY_H
 
-#ifndef RGS_SUPPORT_H
-#define RGS_SUPPORT_H
+#include <stdio.h>
+#include "rgs_support.h"
 
-#include <stdint.h>
+/*Metadata of the block header*/
+
+typedef struct hblock {
+    size_t block_size; //block size field
+    struct hblock *prev; //point to the previous block
+    struct hblock *next; //point to the next block
+    ui8 free_h; //free flag header
+}hblock_t;
+
+/*Metadata of the block footer*/
+
+typedef struct fblock {
+    size_t block_size; //block size field
+    ui8 free_f; //free flag footer
+}fblock_t;
+
+/*API OF THE LIBRARY*/
+
+fblock_t *get_footer(hblock_t *block);
+
+int split_block(hblock_t *block, size_t used_size );
+int isvalid_ptr(void *ptr);
+
+hblock_t *blocks_coalescing(hblock_t *block);
+hblock_t *create_block(size_t aligned_size);
+
+void *get_heap_start();
+
+/*MACRO -> USAGE = BLOCK ALLOCATION*/
+
+#define SET_FREE        (1 << 0) //00000001
+#define BLOCK_FREE      (1 << 0)
+#define SET_USED        (1 << 1) //00000010
+#define BLOCK_USED      (1 << 1)
 
 
-#define ui8 uint8_t //for flag field
-
-/*Errors macro*/
-#define SBRKRET         (void *) -1
-#define ALLOCFAILURE    (void *) -2
-#define NO_FB_MATCH     (void *) -3
-
-/*Custom return*/
-#define SB_SUCCESS      1 //Split block success
-#define RMV_SUCCESS     1 //Remove FL success
-
-#define SB_FAILURE      1 //Split block failure
-#define RMV_FAILURE     0 //Remove FL failure
-
-/*Block Sizes*/
-#define MIN_B_SIZE (1 << 4) //16 byte
-
-/*STANDARD ALIGNMENT*/
-#define ALIGNMENT (1 << 4)
-/*ALIGN SIZE*/
-#define ALIGN(size) (((size) + (ALIGNMENT - 1)) & ~(ALIGNMENT - 1))
-
-/*HELPER MACROS*/
-#define ISFREE(block) ((block)->free_h & BLOCK_FREE) //IF the block is free return 1 otherwise block used
-
-/*HEADER SIZE*/
-#define HEADER_SIZE sizeof(hblock_t)
-
-/*FOOTER SIZE*/
-#define FOOTER_SIZE sizeof(fblock_t)
-
-/*OVERHEAD SIZE*/
-#define OVERHEAD_SIZE (HEADER_SIZE + FOOTER_SIZE)
-
-#endif /*RGS_SUPPORT_H*/
+ #endif

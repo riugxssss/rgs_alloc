@@ -1,7 +1,5 @@
 /* RGS Allocator - A custom allocator.
  *
- * Version 1.0 -- 2026
- *
  * Copyright (c) 2026, A Riugxss <riugxs@ gmail .com>
  * All rights reserved.
  *
@@ -30,45 +28,22 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifndef RGS_FREELIST_H
+#define RGS_FREELIST_H
 
-#ifndef RGS_SUPPORT_H
-#define RGS_SUPPORT_H
+#include "rgs_functionality.h"
 
-#include <stdint.h>
+/*Freelist struct*/
+typedef struct rgs_fl_struct{
+    int tot_block; //To track total block
+    hblock_t *head; //Point to the head of the list
+}rgs_fl_struct_t;
+
+/*Main functionality*/
+void fl_insert(hblock_t *block);
+int fl_remove(hblock_t *block);
+void print_fl(void);
+hblock_t *fit_search(size_t size);
 
 
-#define ui8 uint8_t //for flag field
-
-/*Errors macro*/
-#define SBRKRET         (void *) -1
-#define ALLOCFAILURE    (void *) -2
-#define NO_FB_MATCH     (void *) -3
-
-/*Custom return*/
-#define SB_SUCCESS      1 //Split block success
-#define RMV_SUCCESS     1 //Remove FL success
-
-#define SB_FAILURE      1 //Split block failure
-#define RMV_FAILURE     0 //Remove FL failure
-
-/*Block Sizes*/
-#define MIN_B_SIZE (1 << 4) //16 byte
-
-/*STANDARD ALIGNMENT*/
-#define ALIGNMENT (1 << 4)
-/*ALIGN SIZE*/
-#define ALIGN(size) (((size) + (ALIGNMENT - 1)) & ~(ALIGNMENT - 1))
-
-/*HELPER MACROS*/
-#define ISFREE(block) ((block)->free_h & BLOCK_FREE) //IF the block is free return 1 otherwise block used
-
-/*HEADER SIZE*/
-#define HEADER_SIZE sizeof(hblock_t)
-
-/*FOOTER SIZE*/
-#define FOOTER_SIZE sizeof(fblock_t)
-
-/*OVERHEAD SIZE*/
-#define OVERHEAD_SIZE (HEADER_SIZE + FOOTER_SIZE)
-
-#endif /*RGS_SUPPORT_H*/
+#endif /*RGS_FREELIST_H*/
