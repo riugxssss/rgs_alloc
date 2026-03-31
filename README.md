@@ -92,6 +92,6 @@ My Allocator have some problems, but i wanted to keep it simple because **IT'S O
 
 ## Off-topic resource
 
-I made this section to say that is my very "big" project so it's not perfect
+I made this section to say that is my very first "big" project so it's not perfect
 but it was fun to do, i suggest this project to only people who programmed in C
 for almost 1 - 2 years.
