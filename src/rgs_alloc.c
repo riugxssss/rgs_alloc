@@ -40,10 +40,10 @@
 #include <pthread.h>
 
 /* ----  CUSTOM API  ----*/ 
-#include "rgs_support.h"
-#include "rgs_alloc.h"
-#include "rgs_freelist.h"
-#include "rgs_functionality.h"
+#include "../includes/rgs_support.h"
+#include "../includes/rgs_alloc.h"
+#include "../includes/rgs_freelist.h"
+#include "../includes/rgs_functionality.h"
 
 /*Global mutex init*/ 
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;

@@ -3,7 +3,7 @@
 #include <string.h>
 #include <time.h>
 #define ALLOC_STRATEGY 2
-#include "rgs_alloc.h"
+#include "../includes/rgs_alloc.h"
 
 #define SMALL_BLOCKS 100
 #define RANDOM_BLOCKS 200

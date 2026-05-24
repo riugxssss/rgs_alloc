@@ -37,10 +37,10 @@
 #include <string.h>
 
 
-#include "rgs_alloc.h"
-#include "rgs_support.h"
-#include "rgs_functionality.h"
-#include "rgs_freelist.h"
+#include "../includes/rgs_alloc.h"
+#include "../includes/rgs_support.h"
+#include "../includes/rgs_functionality.h"
+#include "../includes/rgs_freelist.h"
 
 /*A simple function that get the footer of a block doing simple math
  *

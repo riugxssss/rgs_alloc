@@ -29,9 +29,9 @@
  */
 
 #include <stdio.h>
-#include "rgs_support.h"
-#include "rgs_freelist.h"
-#include "rgs_functionality.h"
+#include "../includes/rgs_support.h"
+#include "../includes/rgs_freelist.h"
+#include "../includes/rgs_functionality.h"
 
 //Designated initializer
 static rgs_fl_struct_t fl_refer = {
