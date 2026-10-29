@@ -1,94 +1,125 @@
-# RGS Allocator, an allocator made in C
+# RGS Allocator
 
-RGS is a classical allocator with some features, the structure
-is pretty similary to the standard C allocator - [Documentation](https://www.gnu.org/software/libc/manual/html_node/Memory-Allocation.html)
+A custom memory allocator written in C. The project implements allocator behavior using a heap, free-list management, and the `sbrk()` system call. It is designed to help understand how dynamic memory management works under the hood and how block metadata is maintained in user-space allocators.
 
-## What is an allocator?
+## Overview
 
-*hint: if you already know in detail what it does skip this part*
+Memory allocators are responsible for managing a process’s heap and deciding how to allocate and free memory blocks. This project explores allocator internals at a practical level:
 
-**A memory allocator is a software** that can be useful for dynamic allocation, a dynamic allocation
-is a (in C mainly) manual allocations where the user interact with the **Heap**..
+- allocate a block of requested size
+- track block metadata using headers and footers
+- manage free blocks using a freelist
+- split blocks to reduce internal fragmentation
+- coalesce adjacent free blocks
+- resize blocks when possible
+- protect the public allocator API with mutexes
 
-*for those who dont know what is a heap - ([Heap](https://www.geeksforgeeks.org/what-is-a-memory-heap/))*
+## Features
 
-An allocator can do various manipulation of the heap, in my allocator (like in many others)
-there are **Four basics manipulation**
+The project includes:
 
-But first for users that don't know i'll explain **how the heap work and the structure** of that memory.
+- custom allocator API
+- `sbrk()`-based heap growth
+- boundary-tag block metadata
+- free-list insertion and removal
+- first-fit, best-fit, and worst-fit strategy support
+- block splitting and coalescing
+- zero-initialized allocation
+- resize support
+- basic thread-safety wrappers around the public API
 
-The heap is a contiguos bytes field, like any other VMA (Virtual area memory), that **must have**
-a start and an end. When a process is ready to the use that means the kernel allocated all of the necessary resources,
-in GNU/Linux systems (like-Unix) every process follows a layout-model, **given by the ABI (Application Binary Interface)**
-and in every process there is a VMA dedicated to the heap, where the allocators and allocate and free memory.
+## Technical implementation
 
-*Other links*
-[ABI](https://en.wikipedia.org/wiki/Application_binary_interface)
-[Allocator](https://sumofbytes.com/blog/whats-a-memory-allocator-anyway/)
+The project demonstrates several important systems-programming concepts:
 
-## My Allocator - RGS
+- process heap layout
+- program-break behavior
+- VMA and heap growth semantics
+- block metadata and boundary-tag design
+- free-list organization
+- strategy-based allocation
+- memory safety awareness and validation logic
 
-**The RGS (RiuGxS) Allocator** is an allocator made to learn, made in 5 days and it cover most of the basic features of 
-allocator, the code can be used to comprehend something or how i did the allocator. It uses the sbrk() syscall, the 
-sbrk syscall from the libc library allows to modify the program break of the VMA, **but what is the program break?**
+The implementation is split across several files:
 
-**FANCY EXPLANATION**
-The program break of the Heap VMA is the limit you can use of the heap and if you expand the program break you tell
-the kernel to give you more memory. The sbrk() syscall return a void *ptr to the old limit of the heap.
+- `src/rgs_alloc.c` — allocator entry points and public API
+- `src/rgs_functionality.c` — block creation, splitting, coalescing, and helper routines
+- `src/rgs_freelist.c` — free-list operations and fit selection
+- `includes/rgs_alloc.h` — public allocator interface
+- `includes/rgs_functionality.h` and `includes/rgs_support.h` — internal support definitions
 
-**API**
+## Repository structure
 
-1) RGS_ALLOC
-2) RGS_ALLOCZERO
-3) RGS_RESIZE
-4) RGS_FREE
+- `src/` — allocator implementation
+- `includes/` — internal/public headers
+- `test/` — usage examples and validation code
+- `Makefile` — build automation
+- `READme.md` — project documentation
 
-You can find 4 APIs in the library the rgs_alloc allocate a block and return the ptr to the user data, **if the allocation failed**
-**errno setted and NULL is returned**
-rgs_alloczero allocate a block and set every byte of the user data zone to 0, **if the allocation failed errno setted and NULL is returned**
-rgs_resize resize a block size and based on the size you entered, it does optimization, **if fail errno setted and NULL is returned**
-rgs_free the free function get many incomprehension, when we call the free function many people say *it deallocate memory* 
-but that is not totally correct, the heap VMA is organizated in blocks (or this is the common structure) and when we call
-the free function we only set that block to reusable not deallocate, that's also why when we use allocators they give
-pointer containing randoms value, because some other program used that block already.
+## Prerequisites
 
-## Installation 
+- Linux
+- GCC or Clang
+- Make
+- standard Unix libc
 
-RGS Allocator – Installation & User Guide
+## Build
 
-This guide will help you install, build, and use the RGS Allocator.
+From the repository root:
 
-1. Requirements
+```bash
+make
+```
 
-Before installing, make sure you have the following:
-A C compiler (e.g., gcc or clang)
+This builds the binary named `main` in the project root.
 
-Make utility installed (make)
+## Usage
 
-A Unix-like environment (Linux, macOS, WSL for Windows)
+The public API exposes functions such as:
 
-Optional but recommended:
-git for cloning the repository
-valgrind or similar tools for memory debugging
+```c
+void *rgs_alloc(size_t size);
+void *rgs_resize(void *ptr, size_t size);
+void *rgs_free(void *ptr);
+void *rgs_alloczero(size_t nitem, size_t size);
+```
 
-2. Clone the Repository
+Example:
 
-Open a terminal and run:
-git clone https://github.com/riugxssss/rgs_alloc.git
+```c
+char *buf = rgs_alloc(128);
+char *buf2 = rgs_alloczero(8, sizeof(int));
+char *buf3 = rgs_resize(buf, 256);
+rgs_free(buf);
+```
 
-cd rgs_alloc
+## Known limitations
 
-**This will download all the source files into a local folder.**
+- this is a learning and experimentation project, not a production allocator
+- it does not cover the full complexity of a mature allocator implementation
+- block metadata and coalescing logic are intentionally simplified
+- there is no full stress-testing or verification suite
+- thread safety is a conceptual layer rather than a full allocator hardening model
 
-## Technical Problems
+## Future improvements
 
-My Allocator have some problems, but i wanted to keep it simple because **IT'S ONLY FOR LEARNING** 
-1. The thread-safety is weak and sometimes can crash if the stress is too much
-2. No use of some advanced techniques for freelist (like Segregated-list)
-3. Possible bugs may occure (in my tests seems all okay)
+Possible improvements include:
 
-## Off-topic resource
+- more advanced allocator strategies
+- segregated free lists
+- better fragmentation analysis
+- improved correctness validation
+- concurrency-aware allocator design
+- benchmarking and stress tests
 
-I made this section to say that is my very "big" project so it's not perfect
-but it was fun to do, i suggest this project to only people who programmed in C
-for almost 1 - 2 years.
+## License
+
+The repository includes a license file. Verify the repository metadata before relying on it as a legal statement.
+
+## Related concepts
+
+- memory allocation
+- heap management
+- operating systems
+- C memory safety
+- allocator design
